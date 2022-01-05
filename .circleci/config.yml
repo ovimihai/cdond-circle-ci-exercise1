@@ -9,9 +9,9 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
-      - run: echo "hello" > output.txt
+      - run: echo "hello" > ~/output.txt
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: ~/
           paths:
             - output.txt
   print_output_file:
@@ -19,7 +19,7 @@ jobs:
       - image: alpine:latest
     steps:
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/
       - run: cat output.txt
 
 
