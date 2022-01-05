@@ -17,5 +17,4 @@ workflows:
   workflow:
     jobs:
       - fail_job
-      - after_fail
 
