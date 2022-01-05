@@ -1,14 +1,17 @@
 version: 2.1
 
 jobs:
-  print_hello:
+  fail_job:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - fail_job:
-        run: return 1
-      - after_fail:
-        run: echo "previous failed"
+      - run: return 1
+
+  after_fail:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: echo "previous failed"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
