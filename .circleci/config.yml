@@ -5,21 +5,22 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  print_hello:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - run: echo hello
-  print_world:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - run: echo world
-  print_project_env_var:
+  save_hello_world_output:
     docker:
       - image: alpine:latest
     steps:
-      - run: echo $MY_EXERCISE_VAR1
+      - run: echo "hello" > output.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - output.txt
+  print_output_file:
+    docker:
+      - image: alpine:latest
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: cat output.txt
 
 
 # Invoke jobs via workflows
@@ -27,9 +28,5 @@ jobs:
 workflows:
   say-hello-workflow:
     jobs:
-      - print_hello
-      - print_world:
-          requires:
-            - print_hello
-      - print_project_env_var
+      - save_hello_world_output
 
