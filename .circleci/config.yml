@@ -15,6 +15,11 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: echo world
+  print_project_env_var:
+    docker:
+      - image: alpine:latest
+    steps:
+      - run: echo $MY_EXERCISE_VAR1
 
 
 # Invoke jobs via workflows
