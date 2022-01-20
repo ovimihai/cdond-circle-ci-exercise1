@@ -18,6 +18,34 @@ jobs:
               --template-file template.yml \
               --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
               --region ${AWS_DEFAULT_REGION}
+          command: |
+            aws ec2 describe-instances \ 
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text >> ~/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths: 
+            - inventory.txt
+  # Exercise: Config and Deployment
+  configure_infrastructure: 
+    docker:
+      - image: 
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - add_ssh_keys:
+              # You can get this ID in the section where you registered the SSH Key
+              fingerprints: ["cf:dd:21:72:b3:b5:53:66:16:32:e3:b7:01:7c:6b:6f"] 
+      - run:
+          name: Install Ansible
+          command: |
+            apk add --update ansible
+      - run:
+          name: Run Playbook and Configure server
+          command: |
+            ansible-playbook -i inventory.txt main.yml
+
   destroy_environment:
     docker:
       - image: amazon/aws-cli
@@ -25,13 +53,16 @@ jobs:
       - run:
           name: Destroy environment
           command: |
-            aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+            echo 1 # aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
 # Sequential workflow
 workflows:
   # Name the workflow
   myWorkflow:
     jobs:
       - create_infrastructure
+      - configure_infrastructure:
+        requires:
+            - create_infrastructure
       - destroy_environment:
           requires:
-            - create_infrastructure
+            - configure_infrastructure
