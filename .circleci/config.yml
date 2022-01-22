@@ -95,7 +95,7 @@ jobs:
     docker:
     - image: alpine:latest
     steps:
-      - return: 1
+      - run: return 1
       - test_rollback:
           when: on_fail
 
