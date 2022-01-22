@@ -109,7 +109,7 @@ workflows:
       - smoke_test:
           requires:
             - configure_infrastructure
-      - do_rollback
+      - do_rollback:
           requires:
             - smoke_test
       # - destroy_environment:
