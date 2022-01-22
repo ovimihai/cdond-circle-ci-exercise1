@@ -31,7 +31,7 @@ jobs:
       - checkout
       - run:
           name: Add tar
-          command: yum install tar
+          command: yum -y install tar
       - run:
           name: Create Cloudformation Stack
           command: | # ${CIRCLE_WORKFLOW_ID:0:5}
