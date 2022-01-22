@@ -69,7 +69,7 @@ jobs:
       - run:
           name: Run Playbook and Configure server
           command: |
-            ansible-playbook -i inventory.txt main.yml
+            ansible-playbook -i ~/inventory.txt main.yml
       # - destroy_environment
   
   # Exercise: Smoke Testing
@@ -109,9 +109,9 @@ workflows:
       - smoke_test:
           requires:
             - configure_infrastructure
-      - do_rollback:
-          requires:
-            - smoke_test
+      # - do_rollback:
+      #     requires:
+      #       - smoke_test
       # - destroy_environment:
       #     requires:
       #       - configure_infrastructure
