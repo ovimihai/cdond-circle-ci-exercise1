@@ -5,7 +5,14 @@ orbs:
   # welcome: circleci/welcome-orb@0.4.1
   aws-cli: circleci/aws-cli@2.0.3
 commands:
-  # Exercise - Rollback
+  
+  test_rollback:
+    steps:
+      - run:
+          name: Test rollback
+          when: on_fail
+          command: echo "Rollback"
+
   destroy_environment:
     steps:
       - run:
@@ -30,7 +37,7 @@ jobs:
               --stack-name myStack-2022 \
               --region ${AWS_DEFAULT_REGION}
       - run:
-          name: Get machine ip
+        name: Get machine ip
           command: |
             aws ec2 describe-instances \
               --query "Reservations[*].Instances[*].PublicIpAddress" \
@@ -39,6 +46,10 @@ jobs:
           root: ~/
           paths: 
             - inventory.txt
+      # - destroy_environment
+      #   when: on_fail
+      - test_rollback:
+        when: on_fail
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
@@ -58,6 +69,8 @@ jobs:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i inventory.txt main.yml
+      # - destroy_environment
+      #   when: on_fail
   
   # Exercise: Smoke Testing
   smoke_test:
@@ -76,7 +89,13 @@ jobs:
             else
               return 1
             fi
-      # - destroy_environment  
+      # - destroy_environment
+      #   when: on_fail
+  do_rollback:
+    steps:
+      - return 1
+      - test_rollback:
+        when: on_fail
 
 # Sequential workflow
 workflows:
@@ -90,6 +109,9 @@ workflows:
       - smoke_test:
           requires:
             - configure_infrastructure
+      - do_rollback
+          requires:
+            - smoke_test
       # - destroy_environment:
       #     requires:
       #       - configure_infrastructure
