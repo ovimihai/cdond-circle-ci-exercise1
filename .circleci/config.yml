@@ -47,8 +47,7 @@ jobs:
           paths: 
             - inventory.txt
       # - destroy_environment
-      - test_rollback:
-          when: on_fail
+      - test_rollback
   # Exercise: Config and Deployment
   configure_infrastructure: 
     docker:
