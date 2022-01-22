@@ -37,7 +37,7 @@ jobs:
               --stack-name myStack-2022 \
               --region ${AWS_DEFAULT_REGION}
       - run:
-        name: Get machine ip
+          name: Get machine ip
           command: |
             aws ec2 describe-instances \
               --query "Reservations[*].Instances[*].PublicIpAddress" \
@@ -93,7 +93,7 @@ jobs:
       #   when: on_fail
   do_rollback:
     steps:
-      - return 1
+      - return: 1
       - test_rollback:
         when: on_fail
 
