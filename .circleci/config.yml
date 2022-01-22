@@ -47,6 +47,24 @@ jobs:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i inventory.txt main.yml
+  
+  # Exercise: Smoke Testing
+smoke_test:
+ docker:
+   - image: alpine:latest
+ steps:
+   - run: apk add --update curl
+   - run:
+       name: smoke test
+       command: |
+         URL="https://blog.udacity.com/"
+         # Test if website exists
+         if curl -s --head ${URL} 
+         then
+           return 0
+         else
+           return 1
+         fi
 
   destroy_environment:
     docker:
@@ -65,6 +83,9 @@ workflows:
       - configure_infrastructure:
           requires:
             - create_infrastructure
-      - destroy_environment:
+      - smoke_test:
           requires:
             - configure_infrastructure
+      # - destroy_environment:
+      #     requires:
+      #       - configure_infrastructure
