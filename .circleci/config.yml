@@ -47,7 +47,6 @@ jobs:
           paths: 
             - inventory.txt
       # - destroy_environment
-      #   when: on_fail
       - test_rollback:
           when: on_fail
   # Exercise: Config and Deployment
@@ -70,7 +69,6 @@ jobs:
           command: |
             ansible-playbook -i inventory.txt main.yml
       # - destroy_environment
-      #   when: on_fail
   
   # Exercise: Smoke Testing
   smoke_test:
@@ -90,14 +88,12 @@ jobs:
               return 1
             fi
       # - destroy_environment
-      #   when: on_fail
   do_rollback:
     docker:
     - image: alpine:latest
     steps:
       - run: return 1
-      - test_rollback:
-          when: on_fail
+      - test_rollback
 
 # Sequential workflow
 workflows:
